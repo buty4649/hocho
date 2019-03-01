@@ -70,7 +70,10 @@ module Hocho
 
         temporary_passphrase = SecureRandom.base64(129).chomp
 
-        derive = system(*%w(openssl enc -pbkdf2), in: File::NULL, out: File::NULL, err: [:child, :out]) ? %w(-pbkdf2) : []
+        # fix decrypt error
+        # When the local is openssl-1.1.0 or higher and remote is openssl-1.0.2, remote can not use pdkdf 2 and it becomes an error.
+        derive = []
+        #derive = system(*%w(openssl enc -pbkdf2), in: File::NULL, out: File::NULL, err: [:child, :out]) ? %w(-pbkdf2) : []
 
         encrypted_password = IO.pipe do |r,w|
           w.write temporary_passphrase
